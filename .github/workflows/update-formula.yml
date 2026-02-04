@@ -1,0 +1,175 @@
+name: Update Formula
+
+on:
+  repository_dispatch:
+    types: [update-formula]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate payload
+        run: |
+          FORMULA="${{ github.event.client_payload.formula }}"
+          VERSION="${{ github.event.client_payload.version }}"
+
+          if [[ -z "$FORMULA" || -z "$VERSION" ]]; then
+            echo "::error::Missing required payload: formula=$FORMULA, version=$VERSION"
+            exit 1
+          fi
+
+          # Validate version format (semantic versioning)
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
+            echo "::error::Invalid version format: $VERSION"
+            exit 1
+          fi
+
+          # Validate formula name
+          if [[ ! "$FORMULA" =~ ^(mars|minotaur|rskim)$ ]]; then
+            echo "::error::Unknown formula: $FORMULA"
+            exit 1
+          fi
+
+          echo "Updating $FORMULA to version $VERSION"
+
+      - name: Update mars formula
+        if: github.event.client_payload.formula == 'mars'
+        run: |
+          VERSION="${{ github.event.client_payload.version }}"
+
+          # Download and checksum
+          curl -sL "https://github.com/dean0x/mars/archive/refs/tags/v${VERSION}.tar.gz" -o mars.tar.gz
+          SHA256=$(sha256sum mars.tar.gz | cut -d' ' -f1)
+
+          cat > Formula/mars.rb << EOF
+          class Mars < Formula
+            desc "Multi Agentic Repo workspace manager for Git repositories"
+            homepage "https://github.com/dean0x/mars"
+            url "https://github.com/dean0x/mars/archive/refs/tags/v${VERSION}.tar.gz"
+            sha256 "${SHA256}"
+            license "MIT"
+
+            def install
+              bin.install "dist/mars" => "mars"
+            end
+
+            test do
+              system "#{bin}/mars", "--version"
+            end
+          end
+          EOF
+          sed -i 's/^          //' Formula/mars.rb
+
+      - name: Update minotaur formula
+        if: github.event.client_payload.formula == 'minotaur'
+        run: |
+          VERSION="${{ github.event.client_payload.version }}"
+
+          # Download all platform binaries
+          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-x86_64-apple-darwin.tar.gz" -o darwin-x64.tar.gz
+          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-aarch64-apple-darwin.tar.gz" -o darwin-arm64.tar.gz
+          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-x86_64-unknown-linux-gnu.tar.gz" -o linux-x64.tar.gz
+          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-aarch64-unknown-linux-gnu.tar.gz" -o linux-arm64.tar.gz
+
+          # Calculate checksums
+          SHA_DARWIN_X64=$(sha256sum darwin-x64.tar.gz | cut -d' ' -f1)
+          SHA_DARWIN_ARM64=$(sha256sum darwin-arm64.tar.gz | cut -d' ' -f1)
+          SHA_LINUX_X64=$(sha256sum linux-x64.tar.gz | cut -d' ' -f1)
+          SHA_LINUX_ARM64=$(sha256sum linux-arm64.tar.gz | cut -d' ' -f1)
+
+          cat > Formula/minotaur.rb << EOF
+          class Minotaur < Formula
+            desc "Secure AI agent sandbox wrapper using Podman rootless containers"
+            homepage "https://github.com/dean0x/minotaur"
+            version "${VERSION}"
+            license "MIT"
+
+            on_macos do
+              on_intel do
+                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-x86_64-apple-darwin.tar.gz"
+                sha256 "${SHA_DARWIN_X64}"
+              end
+
+              on_arm do
+                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-aarch64-apple-darwin.tar.gz"
+                sha256 "${SHA_DARWIN_ARM64}"
+              end
+            end
+
+            on_linux do
+              on_intel do
+                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-x86_64-unknown-linux-gnu.tar.gz"
+                sha256 "${SHA_LINUX_X64}"
+              end
+
+              on_arm do
+                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-aarch64-unknown-linux-gnu.tar.gz"
+                sha256 "${SHA_LINUX_ARM64}"
+              end
+            end
+
+            def install
+              bin.install "minotaur"
+            end
+
+            test do
+              assert_match version.to_s, shell_output("#{bin}/minotaur --version")
+            end
+          end
+          EOF
+          sed -i 's/^          //' Formula/minotaur.rb
+
+      - name: Update rskim formula
+        if: github.event.client_payload.formula == 'rskim'
+        run: |
+          VERSION="${{ github.event.client_payload.version }}"
+
+          # Download macOS binaries (Homebrew only supports macOS)
+          curl -sL "https://github.com/dean0x/skim/releases/download/v${VERSION}/skim-x86_64-apple-darwin.tar.gz" -o darwin-x64.tar.gz
+          curl -sL "https://github.com/dean0x/skim/releases/download/v${VERSION}/skim-aarch64-apple-darwin.tar.gz" -o darwin-arm64.tar.gz
+
+          # Calculate checksums
+          SHA_DARWIN_X64=$(sha256sum darwin-x64.tar.gz | cut -d' ' -f1)
+          SHA_DARWIN_ARM64=$(sha256sum darwin-arm64.tar.gz | cut -d' ' -f1)
+
+          cat > Formula/rskim.rb << EOF
+          class Rskim < Formula
+            desc "Smart code reader - streaming code transformation for AI agents"
+            homepage "https://github.com/dean0x/skim"
+            version "${VERSION}"
+            license "MIT"
+
+            on_macos do
+              on_arm do
+                url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-aarch64-apple-darwin.tar.gz"
+                sha256 "${SHA_DARWIN_ARM64}"
+              end
+              on_intel do
+                url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-x86_64-apple-darwin.tar.gz"
+                sha256 "${SHA_DARWIN_X64}"
+              end
+            end
+
+            def install
+              bin.install "skim"
+            end
+
+            test do
+              system "#{bin}/skim", "--version"
+            end
+          end
+          EOF
+          sed -i 's/^          //' Formula/rskim.rb
+
+      - name: Commit and push
+        run: |
+          FORMULA="${{ github.event.client_payload.formula }}"
+          VERSION="${{ github.event.client_payload.version }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/${FORMULA}.rb
+          git diff --staged --quiet || git commit -m "Update ${FORMULA} to ${VERSION}"
+          git push
