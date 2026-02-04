@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update:
@@ -166,13 +167,32 @@ jobs:
           EOF
           sed -i 's/^          //' Formula/rskim.rb
 
-      - name: Commit and push
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           FORMULA="${{ github.event.client_payload.formula }}"
           VERSION="${{ github.event.client_payload.version }}"
+          BRANCH="update-${FORMULA}-${VERSION}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if there are changes
           git add Formula/${FORMULA}.rb
-          git diff --staged --quiet || git commit -m "Update ${FORMULA} to ${VERSION}"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          # Create branch, commit, push
+          git checkout -b "$BRANCH"
+          git commit -m "Update ${FORMULA} to ${VERSION}"
+          git push -u origin "$BRANCH"
+
+          # Create PR
+          gh pr create \
+            --title "Update ${FORMULA} to ${VERSION}" \
+            --body "Automated formula update triggered by ${FORMULA} release v${VERSION}." \
+            --base main \
+            --head "$BRANCH"
