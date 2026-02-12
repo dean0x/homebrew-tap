@@ -31,7 +31,7 @@ jobs:
           fi
 
           # Validate formula name
-          if [[ ! "$FORMULA" =~ ^(mars|minotaur|rskim)$ ]]; then
+          if [[ ! "$FORMULA" =~ ^(mars|mino|rskim)$ ]]; then
             echo "::error::Unknown formula: $FORMULA"
             exit 1
           fi
@@ -66,16 +66,16 @@ jobs:
           EOF
           sed -i 's/^          //' Formula/mars.rb
 
-      - name: Update minotaur formula
-        if: github.event.client_payload.formula == 'minotaur'
+      - name: Update mino formula
+        if: github.event.client_payload.formula == 'mino'
         run: |
           VERSION="${{ github.event.client_payload.version }}"
 
           # Download all platform binaries
-          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-x86_64-apple-darwin.tar.gz" -o darwin-x64.tar.gz
-          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-aarch64-apple-darwin.tar.gz" -o darwin-arm64.tar.gz
-          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-x86_64-unknown-linux-gnu.tar.gz" -o linux-x64.tar.gz
-          curl -sL "https://github.com/dean0x/minotaur/releases/download/v${VERSION}/minotaur-aarch64-unknown-linux-gnu.tar.gz" -o linux-arm64.tar.gz
+          curl -sL "https://github.com/dean0x/mino/releases/download/v${VERSION}/mino-x86_64-apple-darwin.tar.gz" -o darwin-x64.tar.gz
+          curl -sL "https://github.com/dean0x/mino/releases/download/v${VERSION}/mino-aarch64-apple-darwin.tar.gz" -o darwin-arm64.tar.gz
+          curl -sL "https://github.com/dean0x/mino/releases/download/v${VERSION}/mino-x86_64-unknown-linux-gnu.tar.gz" -o linux-x64.tar.gz
+          curl -sL "https://github.com/dean0x/mino/releases/download/v${VERSION}/mino-aarch64-unknown-linux-gnu.tar.gz" -o linux-arm64.tar.gz
 
           # Calculate checksums
           SHA_DARWIN_X64=$(sha256sum darwin-x64.tar.gz | cut -d' ' -f1)
@@ -83,47 +83,52 @@ jobs:
           SHA_LINUX_X64=$(sha256sum linux-x64.tar.gz | cut -d' ' -f1)
           SHA_LINUX_ARM64=$(sha256sum linux-arm64.tar.gz | cut -d' ' -f1)
 
-          cat > Formula/minotaur.rb << EOF
-          class Minotaur < Formula
-            desc "Secure AI agent sandbox wrapper using Podman rootless containers"
-            homepage "https://github.com/dean0x/minotaur"
+          cat > Formula/mino.rb << EOF
+          class Mino < Formula
+            desc "Secure sandbox for AI coding agents using rootless containers"
+            homepage "https://github.com/dean0x/mino"
             version "${VERSION}"
             license "MIT"
 
             on_macos do
               on_intel do
-                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-x86_64-apple-darwin.tar.gz"
+                url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-x86_64-apple-darwin.tar.gz"
                 sha256 "${SHA_DARWIN_X64}"
               end
 
               on_arm do
-                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-aarch64-apple-darwin.tar.gz"
+                url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-aarch64-apple-darwin.tar.gz"
                 sha256 "${SHA_DARWIN_ARM64}"
               end
             end
 
             on_linux do
               on_intel do
-                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-x86_64-unknown-linux-gnu.tar.gz"
+                url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-x86_64-unknown-linux-gnu.tar.gz"
                 sha256 "${SHA_LINUX_X64}"
               end
 
               on_arm do
-                url "https://github.com/dean0x/minotaur/releases/download/v#{version}/minotaur-aarch64-unknown-linux-gnu.tar.gz"
+                url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-aarch64-unknown-linux-gnu.tar.gz"
                 sha256 "${SHA_LINUX_ARM64}"
               end
             end
 
             def install
-              bin.install "minotaur"
+              bin.install "mino"
             end
 
             test do
-              assert_match version.to_s, shell_output("#{bin}/minotaur --version")
+              assert_match version.to_s, shell_output("#{bin}/mino --version")
+              assert_match "config.toml", shell_output("#{bin}/mino config path")
+              output = shell_output("#{bin}/mino --help")
+              assert_match "run", output
+              assert_match "cache", output
+              assert_match "status", output
             end
           end
           EOF
-          sed -i 's/^          //' Formula/minotaur.rb
+          sed -i 's/^          //' Formula/mino.rb
 
       - name: Update rskim formula
         if: github.event.client_payload.formula == 'rskim'
