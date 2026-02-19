@@ -1,8 +1,8 @@
 class Mars < Formula
-  desc "Multi-repo workspace manager for Git repositories"
+  desc "Multi Agentic Repo workspace manager for Git repositories"
   homepage "https://github.com/dean0x/mars"
-  url "https://github.com/dean0x/mars/archive/refs/tags/v0.1.0.tar.gz"
-  sha256 "746a5d070c8ad87c9c6aab45e9e725210bf6ef5396a65fba60b1f0a6eade2881"
+  url "https://github.com/dean0x/mars/archive/refs/tags/v0.1.1.tar.gz"
+  sha256 "382c85ae2b8b4bf7aaa1d134d835cc8c02f736e4ff2f9619882301925d98a910"
   license "MIT"
 
   def install
