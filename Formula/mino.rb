@@ -1,30 +1,30 @@
 class Mino < Formula
   desc "Secure sandbox for AI coding agents using rootless containers"
   homepage "https://github.com/dean0x/mino"
-  version "1.2.1"
+  version "1.2.2"
   license "MIT"
 
   on_macos do
     on_intel do
       url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-x86_64-apple-darwin.tar.gz"
-      sha256 "ed70f21df3f67dc7905ef1158bbbd3d730a632a958e725c8e64ca6531f39aff6"
+      sha256 "5aa7296172bc93b3cde45d0b8dccfff916c8284bacc43a41ff53fbe4e7db9a37"
     end
 
     on_arm do
       url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-aarch64-apple-darwin.tar.gz"
-      sha256 "04646b7ba5e9a02d832652f39cc3cdbc6f4f44cd3d693eece23dad5381d8cb91"
+      sha256 "8e1514fff695f37dbece21905939dd09952d5032cab9380323d1c977a891e254"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "fc8d4fe5c62ce7381e4db1c4a99c06fd3eb1dd60feb3c71f6f36a63c75a24327"
+      sha256 "acab8b9ed30e7015f3d63b47a177d27e0623ffe2ccd23b89f0b3edf74ec286a7"
     end
 
     on_arm do
       url "https://github.com/dean0x/mino/releases/download/v#{version}/mino-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "06804c19871c989b7deb7c0dbdbc14823f1960d16d542bf9070715fd0aa5d808"
+      sha256 "9578ae0a3161bbfdf06ee1840b5ab927f146f0b5f42dbf7db2a58fa77d9d1d8c"
     end
   end
 
