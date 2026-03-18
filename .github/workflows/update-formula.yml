@@ -194,4 +194,4 @@ jobs:
 
           echo "Created PR: $PR_URL"
 
-          gh pr merge "$PR_URL" --auto --squash
+          gh pr merge "$PR_URL" --squash --delete-branch
