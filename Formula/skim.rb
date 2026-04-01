@@ -1,28 +1,28 @@
 class Skim < Formula
   desc "Smart code reader - streaming code transformation for AI agents"
   homepage "https://github.com/dean0x/skim"
-  version "2.0.0"
+  version "2.1.0"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-aarch64-apple-darwin.tar.gz"
-      sha256 "ff1e8d3a88f2ec10e963ede0f9d249c606137857eb106af4e0ed01c7d05e374e"
+      sha256 "62b5b5d8e0563e8e2945d11e940478099a3cbcd00e39152538cf7e3b7f2b021d"
     end
     on_intel do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-x86_64-apple-darwin.tar.gz"
-      sha256 "a144833b0578caeda105cb6ab428de79583712597f257d50a014c9f115cc9bac"
+      sha256 "0ccda1577b76b39221ca80ad63bb41f6d0f766d302859a18f68463c7dfafe6ac"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "8502197ab25a8174fa9198331d7c0e3dae6d095a709a57b708cd0d4dbea6223e"
+      sha256 "d5b8b36e09d618820ffa16874ee61cc21157bcf1078d12e51370d74f91fa9272"
     end
     on_arm do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "328f88127497887990520bf79d2e2bbdb8dbfa5222cb93681b84816aa7588164"
+      sha256 "ef20707fa23084d2d73821704abf056f11524983dea0ce04a5f5d9795d6816aa"
     end
   end
 
