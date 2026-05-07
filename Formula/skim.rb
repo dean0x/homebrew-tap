@@ -7,22 +7,22 @@ class Skim < Formula
   on_macos do
     on_arm do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-aarch64-apple-darwin.tar.gz"
-      sha256 "42b6c920b937bb717beedcbba94fc956d6bded43c70cf1d4f80014dba9c1af4a"
+      sha256 "a2033e3d176e6b1fcca388f4d539bc8cddc7ac7dc1a99a4df43a7ddbc886d336"
     end
     on_intel do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-x86_64-apple-darwin.tar.gz"
-      sha256 "a820ba0f98d2ebffa6cc3390cdf2bedc7d2b1764b38b5f3c0193736f62b266fb"
+      sha256 "a2f37a272b91bc1497acdc95ed3f62c225bed798059562e7fb0c05b80616f2a8"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "e5acd0aad9be19711d791ad9189bbb8972a465d3b5db6f8f76c0c61e2ec3006d"
+      sha256 "a61cdafdda6f650fe53e0281ef53f1b78c96cdb36d9476fadd00e1608c9d1534"
     end
     on_arm do
       url "https://github.com/dean0x/skim/releases/download/v#{version}/skim-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "f558d9e1c1e0f85f29a30e25a5ed382c80ac17bb1623fac373f0497c99080cba"
+      sha256 "36e86a2dd6382f9abf3f4df559372e01af07642b0cbb1eebcd7360ba220fc4f5"
     end
   end
 
